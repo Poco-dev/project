@@ -15,7 +15,7 @@ export default {
     sendDataToBot() {
       if (window.Telegram?.WebApp) {
         window.Telegram.WebApp.sendData("Данные из Vue!");
-        window.Telegram.WebApp.close();
+        window.Telegram.WebApp.exitFullscreen();
       } else {
         console.log('Telegram WebApp не доступен');
         alert('Telegram WebApp не доступен');

@@ -55,17 +55,17 @@ export default {
     sendOrder() {
       if (window.Telegram?.WebApp) {
         const tg = window.Telegram.WebApp;
-        tg.sendData(JSON.stringify({
+        const orderData = {
           action: "order",
           cart: this.cart,
           total: this.cart.reduce((sum, item) => sum + item.price, 0),
-        }));
+        };
+
+        console.log("Отправляю данные в Telegram:", orderData); // Логируем перед отправкой
+        tg.sendData(JSON.stringify(orderData)); // Важно: данные должны быть строкой!
         tg.close();
-      } else {
-        alert("Заказ отправлен в консоль (в Telegram было бы боту)");
-        console.log("Заказ:", this.cart);
       }
-    },
+    }
   },
 };
 </script>

@@ -8,15 +8,8 @@
 <script>
 export default {
   mounted() {
-    if (window.Telegram?.WebApp) {
-      const tg = window.Telegram.WebApp;
-      tg.expand(); // Раскрыть на весь экран
-      tg.MainButton.setText("Готово").show().onClick(() => {
-        tg.sendData(JSON.stringify({ action: "submit" }));
-      });
-    } else {
-      alert('Telegram WebApp не доступен');
-    }
+    console.log(window.Telegram?.WebApp); // Должен вывести объект, если запущено в Telegram
+    console.log(window.Telegram?.WebApp.initData); // Данные от Telegram (user, chat и т. д.)
   },
   methods: {
     sendDataToBot() {

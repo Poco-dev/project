@@ -39,11 +39,17 @@ export default {
 💰 Бонусов: ${this.bonuses}`);
     },
     saveBonus() {
-      alert("💎 Вы начали копить бонусы!");
+      if (this.tg) {
+        this.tg.sendData(JSON.stringify({ action: "save" }));
+      }
     },
+
     spendBonus() {
-      alert("🎁 У вас пока 0 бонусов");
+      if (this.tg) {
+        this.tg.sendData(JSON.stringify({ action: "spend" }));
+      }
     },
+
     playGame() {
       alert("🎮 Загрузка игры...");
     },

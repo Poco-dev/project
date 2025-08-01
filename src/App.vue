@@ -35,9 +35,18 @@ export default {
       } else {
         console.warn("❌ Не удалось открыть профиль, tg не инициализирован");
       }
-    }
+    },
+    saveBonus() {
+      return
+    },
+    spendBonus() {
+      return
+    },
+    playGame() {
+      return
+    },
   },
-};
+}
 </script>
 
 <template>
@@ -47,16 +56,16 @@ export default {
     </h1>
 
     <div class="menu">
-      <div class="menu-item flex items-center justify-center cursor-pointer">
+      <div class="menu-item flex items-center justify-center cursor-pointer" @click="profile">
         👤 Профиль
       </div>
-      <div class="menu-item flex items-center justify-center cursor-pointer">
+      <div class="menu-item flex items-center justify-center cursor-pointer" @click="saveBonus">
         💎 Копить бонусы
       </div>
-      <div class="menu-item flex items-center justify-center cursor-pointer">
+      <div class="menu-item flex items-center justify-center cursor-pointer" @click="spendBonus">
         🎁 Потратить бонусы
       </div>
-      <div class="menu-item flex items-center justify-center cursor-pointer">
+      <div class="menu-item flex items-center justify-center cursor-pointer" @click="playGame">
         🎮 Зайти в игру
       </div>
       <div class="menu-item flex items-center justify-center cursor-pointer" @click="exit">

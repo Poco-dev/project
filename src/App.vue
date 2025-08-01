@@ -30,11 +30,7 @@ export default {
       }
     },
     profile() {
-      if (this.tg) {
-        this.tg.openProfile(); // Открыть профиль пользователя
-      } else {
-        console.warn("❌ Не удалось открыть профиль, tg не инициализирован");
-      }
+      console.log(tg)
     },
     saveBonus() {
       return

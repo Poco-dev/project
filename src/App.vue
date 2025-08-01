@@ -30,7 +30,7 @@ export default {
       }
     },
     profile() {
-      console.log(tg)
+      console.log(tg.Telegram.WebApp.initDataUnsafe.user);
     },
     saveBonus() {
       return

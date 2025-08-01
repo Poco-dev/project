@@ -2,15 +2,6 @@
 export default {
   data() {
     return {
-      menu: [
-        { id: 1, name: "Профиль" },
-        { id: 2, name: "Списать бонусы" },
-        { id: 3, name: "Потратить бонусы" },
-        { id: 4, name: "Зайти в игру" },
-        { id: 5, name: "Выйти" }
-      ],
-      selectedItem: null,
-      cart: [],
       tg: null,
     };
   },
@@ -31,51 +22,38 @@ export default {
     }
   },
   methods: {
-    selectItem(item) {
-      this.selectedItem = item;
-    },
-    addToCart() {
-      if (this.selectedItem) {
-        this.cart.push(this.selectedItem);
-        this.selectedItem = null;
+    exit() {
+      if (this.tg) {
+        this.tg.close(); // Закрыть WebApp
+      } else {
+        console.warn("❌ Не удалось закрыть WebApp, tg не инициализирован");
       }
-    },
-    removeFromCart(index) {
-      this.cart.splice(index, 1);
-    },
-    sendOrder() {
-      if (!this.tg || typeof this.tg.sendData !== "function") {
-        alert("⚠️ WebApp API недоступен. Пожалуйста, запустите через Telegram.");
-        console.error("Telegram WebApp API не доступен");
-        return;
-      }
-
-      const orderData = JSON.stringify({
-        action: "order",
-        items: this.cart,
-        total: this.cart.reduce((sum, item) => sum + item.price, 0),
-      });
-
-      console.log("📤 Отправка данных в Telegram:", orderData);
-      this.tg.sendData(orderData);
-
-      // Закрываем WebApp после отправки
-      setTimeout(() => this.tg.close(), 300);
-    },
+    }
   },
 };
 </script>
 
 <template>
-  <div class="app flex flex-col items-center justify-center min-h-screen bg-gray-100">
-    <h1 class="text-3xl text-inherit underline p-4">
+  <div class="app flex flex-col items-center justify-center min-h-screen bg-violet-100">
+    <h1 class="text-3xl text-inherit underline p-8">
       Название будет
     </h1>
 
     <div class="menu">
-      <div v-for="item in menu" :key="item.id" class="menu-item flex items-center justify-center cursor-pointer"
-        @click="selectItem(item)">
-        {{ item.name }}
+      <div class="menu-item flex items-center justify-center cursor-pointer">
+        Профиль
+      </div>
+      <div class="menu-item flex items-center justify-center cursor-pointer">
+        Копить бонусы
+      </div>
+      <div class="menu-item flex items-center justify-center cursor-pointer">
+        Потратить бонусы
+      </div>
+      <div class="menu-item flex items-center justify-center cursor-pointer">
+        Зайти в игру
+      </div>
+      <div class="menu-item flex items-center justify-center cursor-pointer" @click="exit">
+        Выйти
       </div>
     </div>
   </div>
@@ -90,8 +68,8 @@ export default {
 }
 
 .menu-item {
-  padding: 20px;
-  margin: 5px 0;
+  padding: 18px;
+  margin: 6px 0;
   background: #f0f0f0;
   cursor: pointer;
   border-radius: 6px;

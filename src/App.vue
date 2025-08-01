@@ -69,7 +69,7 @@ export default {
         tg.sendData(orderData); // Ключевой момент!
 
         // 3. Закрываем WebApp (не раньше отправки!)
-        tg.close();
+        setTimeout(() => tg.close(), 300);
       }
     }
   },

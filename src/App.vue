@@ -1,43 +1,17 @@
-<template>
-  <div class="app">
-    <h1>🍕 Пицца-бот</h1>
-
-    <div class="menu">
-      <div v-for="item in menu" :key="item.id" class="menu-item" @click="selectItem(item)">
-        {{ item.name }} — {{ item.price }} ₽
-      </div>
-    </div>
-
-    <div v-if="selectedItem" class="selected-item">
-      Выбрано: <strong>{{ selectedItem.name }}</strong>
-      <button @click="addToCart">Добавить в корзину</button>
-    </div>
-
-    <div class="cart">
-      <h2>Корзина ({{ cart.length }})</h2>
-      <ul>
-        <li v-for="(item, index) in cart" :key="index">
-          {{ item.name }} — {{ item.price }} ₽
-          <button @click="removeFromCart(index)">❌</button>
-        </li>
-      </ul>
-      <button @click="sendOrder" :disabled="!cart.length">Оформить заказ</button>
-    </div>
-  </div>
-</template>
-
 <script>
 export default {
   data() {
     return {
       menu: [
-        { id: 1, name: "Пепперони", price: 450 },
-        { id: 2, name: "Маргарита", price: 390 },
-        { id: 3, name: "Гавайская", price: 420 },
+        { id: 1, name: "Профиль" },
+        { id: 2, name: "Списать бонусы" },
+        { id: 3, name: "Потратить бонусы" },
+        { id: 4, name: "Зайти в игру" },
+        { id: 5, name: "Выйти" }
       ],
       selectedItem: null,
       cart: [],
-      tg: null, // Telegram WebApp instance
+      tg: null,
     };
   },
   mounted() {
@@ -92,6 +66,21 @@ export default {
 };
 </script>
 
+<template>
+  <div class="app flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <h1 class="text-3xl text-inherit underline p-4">
+      Название будет
+    </h1>
+
+    <div class="menu">
+      <div v-for="item in menu" :key="item.id" class="menu-item flex items-center justify-center cursor-pointer"
+        @click="selectItem(item)">
+        {{ item.name }}
+      </div>
+    </div>
+  </div>
+</template>
+
 <style>
 .app {
   font-family: Arial, sans-serif;
@@ -101,7 +90,7 @@ export default {
 }
 
 .menu-item {
-  padding: 10px;
+  padding: 20px;
   margin: 5px 0;
   background: #f0f0f0;
   cursor: pointer;

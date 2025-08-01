@@ -3,46 +3,52 @@ export default {
   data() {
     return {
       tg: null,
+      user: null,
+      bonuses: 0, // пока захардкожено
     };
   },
   mounted() {
-    // Проверяем наличие Telegram WebApp API
     if (window.Telegram && window.Telegram.WebApp) {
       this.tg = window.Telegram.WebApp;
+      this.tg.ready();
+      this.tg.expand();
 
-      console.log("Telegram WebApp найден ✅");
-      this.tg.ready(); // Обязательно!
-      this.tg.expand(); // Растянуть на весь экран
+      const unsafe = this.tg.initDataUnsafe;
 
-      if (!this.tg.initData || !this.tg.initDataUnsafe?.user) {
-        console.warn("⚠️ WebApp запущен вне Telegram или initData пустой");
+      if (unsafe && unsafe.user) {
+        this.user = unsafe.user;
+        console.log("✅ Пользователь:", this.user);
+      } else {
+        console.warn("⚠️ Пользователь не определён");
       }
     } else {
-      console.warn("❌ Telegram WebApp не найден. Возможно вы открыли ссылку напрямую в браузере");
+      console.warn("❌ Telegram WebApp не найден");
     }
   },
   methods: {
     exit() {
       if (this.tg) {
-        this.tg.close(); // Закрыть WebApp
+        this.tg.close();
       } else {
         console.warn("❌ Не удалось закрыть WebApp, tg не инициализирован");
       }
     },
     profile() {
-      console.log(tg.Telegram.WebApp.initDataUnsafe.user);
+      alert(`👤 Имя: ${this.user?.first_name || "—"}
+🆔 ID: ${this.user?.id || "—"}
+💰 Бонусов: ${this.bonuses}`);
     },
     saveBonus() {
-      return
+      alert("💎 Вы начали копить бонусы!");
     },
     spendBonus() {
-      return
+      alert("🎁 У вас пока 0 бонусов");
     },
     playGame() {
-      return
+      alert("🎮 Загрузка игры...");
     },
   },
-}
+};
 </script>
 
 <template>
@@ -51,64 +57,41 @@ export default {
       🌟 Добро пожаловать
     </h1>
 
-    <div class="menu">
-      <div class="menu-item flex items-center justify-center cursor-pointer" @click="profile">
-        👤 Профиль
-      </div>
-      <div class="menu-item flex items-center justify-center cursor-pointer" @click="saveBonus">
-        💎 Копить бонусы
-      </div>
-      <div class="menu-item flex items-center justify-center cursor-pointer" @click="spendBonus">
-        🎁 Потратить бонусы
-      </div>
-      <div class="menu-item flex items-center justify-center cursor-pointer" @click="playGame">
-        🎮 Зайти в игру
-      </div>
-      <div class="menu-item flex items-center justify-center cursor-pointer" @click="exit">
-        🚪 Выйти
-      </div>
+    <div class="text-center mb-6 bg-white p-4 rounded shadow w-full max-w-md">
+      <div class="text-lg font-medium mb-1">👤 {{ user?.first_name || 'Гость' }}</div>
+      <div class="text-sm text-gray-600">@{{ user?.username || 'не указано' }}</div>
+      <div class="text-sm text-gray-500">ID: {{ user?.id || '—' }}</div>
+      <div class="mt-2 text-blue-700 font-semibold">💰 Бонусов: {{ bonuses }}</div>
+    </div>
+
+    <div class="menu w-full max-w-md">
+      <div class="menu-item" @click="profile">👤 Профиль</div>
+      <div class="menu-item" @click="saveBonus">💎 Копить бонусы</div>
+      <div class="menu-item" @click="spendBonus">🎁 Потратить бонусы</div>
+      <div class="menu-item" @click="playGame">🎮 Зайти в игру</div>
+      <div class="menu-item bg-red-100 text-red-700 hover:bg-red-200" @click="exit">🚪 Выйти</div>
     </div>
   </div>
 </template>
 
-<style>
+<style scoped>
 .app {
   font-family: Arial, sans-serif;
   padding: 20px;
-  max-width: 400px;
-  margin: 0 auto;
 }
 
 .menu-item {
-  padding: 18px;
+  padding: 16px;
   margin: 6px 0;
   background: #f0f0f0;
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 18px;
+  transition: background 0.2s;
 }
 
 .menu-item:hover {
   background: #e0e0e0;
-}
-
-button {
-  background: #007bff;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  margin-top: 10px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-button:disabled {
-  background: #cccccc;
-  cursor: not-allowed;
-}
-
-.cart {
-  margin-top: 20px;
-  border-top: 1px solid #ddd;
-  padding-top: 10px;
 }
 </style>

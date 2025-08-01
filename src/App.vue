@@ -37,7 +37,24 @@ export default {
       ],
       selectedItem: null,
       cart: [],
+      tg: null, // Telegram WebApp instance
     };
+  },
+  mounted() {
+    // Проверяем наличие Telegram WebApp API
+    if (window.Telegram && window.Telegram.WebApp) {
+      this.tg = window.Telegram.WebApp;
+
+      console.log("Telegram WebApp найден ✅");
+      this.tg.ready(); // Обязательно!
+      this.tg.expand(); // Растянуть на весь экран
+
+      if (!this.tg.initData || !this.tg.initDataUnsafe?.user) {
+        console.warn("⚠️ WebApp запущен вне Telegram или initData пустой");
+      }
+    } else {
+      console.warn("❌ Telegram WebApp не найден. Возможно вы открыли ссылку напрямую в браузере");
+    }
   },
   methods: {
     selectItem(item) {
@@ -53,25 +70,24 @@ export default {
       this.cart.splice(index, 1);
     },
     sendOrder() {
-      if (window.Telegram?.WebApp) {
-        const tg = window.Telegram.WebApp;
-
-        // 1. Подготавливаем данные (обязательно в строку!)
-        const orderData = JSON.stringify({
-          action: "order",
-          items: this.cart,
-          total: this.cart.reduce((sum, item) => sum + item.price, 0),
-        });
-
-        console.log("Отправляемые данные:", orderData); // Проверьте в консоли браузера
-
-        // 2. Отправляем данные
-        tg.sendData(orderData); // Ключевой момент!
-
-        // 3. Закрываем WebApp (не раньше отправки!)
-        setTimeout(() => tg.close(), 300);
+      if (!this.tg || typeof this.tg.sendData !== "function") {
+        alert("⚠️ WebApp API недоступен. Пожалуйста, запустите через Telegram.");
+        console.error("Telegram WebApp API не доступен");
+        return;
       }
-    }
+
+      const orderData = JSON.stringify({
+        action: "order",
+        items: this.cart,
+        total: this.cart.reduce((sum, item) => sum + item.price, 0),
+      });
+
+      console.log("📤 Отправка данных в Telegram:", orderData);
+      this.tg.sendData(orderData);
+
+      // Закрываем WebApp после отправки
+      setTimeout(() => this.tg.close(), 300);
+    },
   },
 };
 </script>
@@ -89,6 +105,7 @@ export default {
   margin: 5px 0;
   background: #f0f0f0;
   cursor: pointer;
+  border-radius: 6px;
 }
 
 .menu-item:hover {
@@ -102,10 +119,12 @@ button {
   padding: 8px 12px;
   margin-top: 10px;
   cursor: pointer;
+  border-radius: 4px;
 }
 
 button:disabled {
   background: #cccccc;
+  cursor: not-allowed;
 }
 
 .cart {

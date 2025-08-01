@@ -11,7 +11,7 @@ export default {
 }
 </script>
 <template>
-    <div class="flex flex-col items-center justify-center min-h-screen bg-violet-100">
+    <div class="flex flex-col items-center justify-center min-h-screen bg-blue-50">
         <h1 class="text-3xl font-bold mb-6">🌟 Добро пожаловать</h1>
         <div class="menu w-full max-w-md">
             <router-link class="menu-item" to="/profile">👤 Профиль</router-link>

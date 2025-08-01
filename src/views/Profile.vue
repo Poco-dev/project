@@ -8,7 +8,7 @@
             <p><strong>Бонусов:</strong> {{ bonuses }}</p>
         </div>
 
-        <router-link to="/" class="mt-6 text-blue-600 hover:underline menu-item ">⬅️ Назад</router-link>
+        <router-link to="/" class="mt-6 text-blue-600 menu-item ">⬅️ Назад</router-link>
     </div>
 </template>
 

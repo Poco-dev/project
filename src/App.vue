@@ -57,13 +57,6 @@ export default {
       🌟 Добро пожаловать
     </h1>
 
-    <div class="text-center mb-6 bg-white p-4 rounded shadow w-full max-w-md">
-      <div class="text-lg font-medium mb-1">👤 {{ user?.first_name || 'Гость' }}</div>
-      <div class="text-sm text-gray-600">@{{ user?.username || 'не указано' }}</div>
-      <div class="text-sm text-gray-500">ID: {{ user?.id || '—' }}</div>
-      <div class="mt-2 text-blue-700 font-semibold">💰 Бонусов: {{ bonuses }}</div>
-    </div>
-
     <div class="menu w-full max-w-md">
       <div class="menu-item" @click="profile">👤 Профиль</div>
       <div class="menu-item" @click="saveBonus">💎 Копить бонусы</div>

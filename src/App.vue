@@ -35,25 +35,25 @@ export default {
 
 <template>
   <div class="app flex flex-col items-center justify-center min-h-screen bg-violet-100">
-    <h1 class="text-3xl text-inherit underline p-8">
-      Название будет
+    <h1 class="text-3xl font-bold mb-6 text-center">
+      🌟 Добро пожаловать
     </h1>
 
     <div class="menu">
       <div class="menu-item flex items-center justify-center cursor-pointer">
-        Профиль
+        👤 Профиль
       </div>
       <div class="menu-item flex items-center justify-center cursor-pointer">
-        Копить бонусы
+        💎 Копить бонусы
       </div>
       <div class="menu-item flex items-center justify-center cursor-pointer">
-        Потратить бонусы
+        🎁 Потратить бонусы
       </div>
       <div class="menu-item flex items-center justify-center cursor-pointer">
-        Зайти в игру
+        🎮 Зайти в игру
       </div>
       <div class="menu-item flex items-center justify-center cursor-pointer" @click="exit">
-        Выйти
+        🚪 Выйти
       </div>
     </div>
   </div>

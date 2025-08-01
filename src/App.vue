@@ -28,6 +28,13 @@ export default {
       } else {
         console.warn("❌ Не удалось закрыть WebApp, tg не инициализирован");
       }
+    },
+    profile() {
+      if (this.tg) {
+        this.tg.openProfile(); // Открыть профиль пользователя
+      } else {
+        console.warn("❌ Не удалось открыть профиль, tg не инициализирован");
+      }
     }
   },
 };

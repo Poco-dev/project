@@ -105,12 +105,12 @@ export default {
             <h2 class="text-xl mb-4">Выберите аватар</h2>
             <div class="flex space-x-8 mb-8">
                 <div @click="chooseAvatar('dog')" class="cursor-pointer flex flex-col items-center">
-                    <img src="/avatars/dog.png" alt="Собака"
+                    <img src="" alt="Собака"
                         class="w-24 h-24 rounded-full border-4 border-blue-300 mb-2" />
                     <span>Собака</span>
                 </div>
                 <div @click="chooseAvatar('cat')" class="cursor-pointer flex flex-col items-center">
-                    <img src="/avatars/cat.png" alt="Кот"
+                    <img src="" alt="Кот"
                         class="w-24 h-24 rounded-full border-4 border-pink-300 mb-2" />
                     <span>Кот</span>
                 </div>

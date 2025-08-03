@@ -1,59 +1,44 @@
 <template>
-    <div class="game-bg min-h-screen relative flex flex-col items-center">
-        <h1 class="text-3xl font-bold mt-8 mb-4">🎮 Игра</h1>
+    <div class="game-bg min-h-screen relative flex flex-col items-center justify-between pb-5">
         <!-- Иконки по краям -->
         <div v-if="stage === 'game'" class="icon-bar">
-            <button @click="showAvatar" class="icon-btn left"><span>🐶</span><br>Аватар</button>
+            <router-link v-if="stage !== 'choose'" to="/" class="font-bold text-red-600 icon-btn left">⬅️
+                Выход</router-link>
+            <button @click="showAvatar" class="icon-btn right2"><span>🐶</span><br>Аватар</button>
             <button @click="showSafe" class="icon-btn right"><span>🗝️</span><br>Сейф</button>
-            <button @click="showUpgrade" class="icon-btn left2"><span>⚡</span><br>Апгрейд</button>
-            <button @click="showTutorial" class="icon-btn right2"><span>❓</span><br>Обучение</button>
+            <button @click="showUpgrade" class="icon-btn right3"><span>⚡</span><br>Апгрейд</button>
+
         </div>
         <!-- Выбор аватара -->
-        <div v-if="stage === 'choose'" class="flex flex-col items-center">
-            <h2 class="text-xl mb-4">Выберите аватар</h2>
+        <div v-if="stage === 'choose'" class="flex flex-col items-center pt-30">
+            <h1 class="text-4xl mb-7 font-bold">Выберите аватар</h1>
             <div class="flex space-x-8 mb-8">
                 <div @click="chooseAvatar('dog')" class="cursor-pointer flex flex-col items-center">
                     <span class="text-6xl mb-2">🐶</span>
-                    <span>Собака</span>
+                    <span class="font-semibold">Собака</span>
                 </div>
                 <div @click="chooseAvatar('cat')" class="cursor-pointer flex flex-col items-center">
                     <span class="text-6xl mb-2">🐱</span>
-                    <span>Кот</span>
+                    <span class="font-semibold">Кот</span>
                 </div>
             </div>
         </div>
-        <!-- Лестница уровней -->
-        <div v-else class="ladder-container">
-            <div class="cloud" style="left: 20px; top: 20px;">☁️</div>
-            <div class="cloud" style="left: 220px; top: 80px;">☁️</div>
-            <div class="cloud" style="left: 120px; top: 220px;">☁️</div>
-            <div class="cloud" style="left: 180px; top: 320px;">☁️</div>
-            <div v-for="(lvl, idx) in visibleLevels" :key="lvl" :style="getLevelStyle(idx)"
-                :class="['level', lvl === level ? 'current' : lvl < level ? 'passed' : '']">
-                <span class="font-bold">{{ lvl }}</span>
-                <span v-if="lvl === level" class="ml-2">
-                    <span class="text-2xl">🌩️</span>
-                    <span>{{ currentMonster.name }} (HP: {{ monsterHp }})</span>
-                    <button @click="hitMonster" class="ml-2 px-3 py-1 bg-green-600 text-white rounded">Ударить</button>
-                </span>
-                <span v-else-if="lvl < level" class="text-green-600 ml-2">✔️</span>
-            </div>
-            <!-- Баллы и аксессуары -->
-            <div class="score-box">Баллы: <b>{{ userPoints }}</b></div>
-            <div class="accessories-box">
-                <div v-for="(variant, type) in accessories" :key="type" class="accessory">
-                    <span class="text-2xl">🎩</span>
+        <div v-else class="levels w-full overflow-y-auto h-[90vh] flex flex-col-reverse items-center pt-10 pb-20">
+            <div v-for="(group, groupIndex) in levelGroups" :key="groupIndex" class="flex gap-4 mb-10"
+                :class="groupIndex % 2 === 0 ? 'flex-row' : 'flex-row-reverse'">
+                <div v-for="(lvl, lvlIndex) in group" :key="lvl"
+                    class="level-item flex items-center justify-center w-24 h-24 rounded-full border-4 border-blue-300 text-xl font-bold"
+                    @click="handleAttack(lvl)" :style="{ marginBottom: getDiagonalOffset(groupIndex, lvlIndex) }">
+                    {{ lvl }}
+                    <span v-if="lvl === level" class="ml-2">{{ currentMonster.emoji }}</span>
                 </div>
             </div>
+
         </div>
-        <router-link to="/" class="mt-8 text-green-600 menu-item">⬅️ Назад</router-link>
-        <!-- Popup -->
-        <div v-if="popup.show" class="popup-overlay">
-            <div class="popup-window">
-                <div class="mb-4">{{ popup.text }}</div>
-                <button @click="closePopup" class="px-4 py-2 bg-green-600 text-white rounded">OK</button>
-            </div>
-        </div>
+
+
+
+
     </div>
 </template>
 
@@ -100,119 +85,62 @@ export default {
             const end = Math.min(this.maxLevel, start + 6);
             return Array.from({ length: end - start + 1 }, (_, i) => start + i);
         },
+        levelGroups() {
+            const groups = [];
+            for (let i = 0; i < this.visibleLevels.length; i += 4) {
+                groups.push(this.visibleLevels.slice(i, i + 4));
+            }
+            return groups;
+        }
     },
+
     mounted() {
         const tg = window.Telegram?.WebApp;
         if (tg?.initDataUnsafe?.user) {
             this.user = tg.initDataUnsafe.user;
-            this.userPoints = 10; // временно
+            this.userPoints = 1000; // временно
         }
-    },
-    methods: {
+    }, methods: {
         chooseAvatar(type) {
             this.avatar = type;
             this.stage = "game";
         },
-        hitMonster() {
-            if (this.userPoints < this.hitValue) return this.showPopup("Недостаточно баллов!");
-            this.userPoints -= this.hitValue;
-            this.monsterHp -= this.hitValue;
-            if (this.monsterHp <= 0) {
-                this.levelUp();
+        handleAttack(lvl) {
+            if (lvl !== this.level) return;
+
+            if (this.userPoints < this.hitValue) {
+                this.popup = { show: true, text: "Недостаточно баллов!" };
+                return;
             }
-        },
-        levelUp() {
-            if (this.level < this.maxLevel) {
+
+            this.monsterHp -= this.hitValue;
+            this.userPoints -= this.hitValue;
+
+            if (this.monsterHp <= 0) {
                 this.level++;
                 this.monsterHp = this.currentMonsterHp;
-                this.showPopup("Уровень пройден!");
+                this.popup = { show: true, text: `Монстр побежден! Уровень ${this.level}` };
             }
         },
-        openSafe() {
-            if (this.safeOpenedToday) return this.showPopup("Сейф уже открыт сегодня!");
-            this.safeOpenedToday = true;
-            const types = ["hat", "chain", "jacket", "pants", "slippers"];
-            const type = types[Math.floor(Math.random() * types.length)];
-            const variant = Math.floor(Math.random() * 4);
-            this.accessories[type] = variant;
-            this.showPopup(`Вам выпал аксессуар: ${type} (${variant})`);
+        getSide(index) {
+            const groupIndex = Math.floor(index / 4);
+            return groupIndex % 2 === 0 ? 'flex-start' : 'flex-end';
         },
-        showTutorial() {
-            this.showPopup("Наносите удары, чтобы победить монстра и пройти уровень. Открывайте сейф каждый день!");
-        },
-        showUpgrade() {
-            this.showPopup("Система апгрейдов появится скоро!");
-        },
-        showAvatar() {
-            this.showPopup("Выбранный аватар: " + (this.avatar === "dog" ? "🐶 Собака" : "🐱 Кот"));
-        },
-        showSafe() {
-            this.openSafe();
-        },
-        showPopup(text) {
-            this.popup.text = text;
-            this.popup.show = true;
-        },
-        closePopup() {
-            this.popup.show = false;
-        },
-        getLevelStyle(idx) {
-            // Диагональное расположение
-            return {
-                position: 'absolute',
-                left: `${40 + idx * 40}px`,
-                top: `${60 + idx * 35}px`,
-                zIndex: 10 + idx,
-            };
-        },
-    },
+        getDiagonalOffset(groupIndex, lvlIndex) {
+            const baseOffset = 10; // px
+            const offset = lvlIndex * baseOffset;
+            return groupIndex % 2 === 0 ? `${offset}px` : `${(3 - lvlIndex) * baseOffset}px`;
+        }
+    }
+
+
 };
 </script>
 
 <style scoped>
 .game-bg {
     background: linear-gradient(to top, #e6ffe6 70%, #cce3fa 100%);
-    min-height: 100vh;
     overflow: hidden;
-}
-
-.ladder-container {
-    position: relative;
-    width: 100%;
-    height: 400px;
-    margin-top: 20px;
-}
-
-.level {
-    width: 100px;
-    height: 48px;
-    background: #fff;
-    border-radius: 50%;
-    box-shadow: 0 2px 8px #0001;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 8px;
-    position: absolute;
-    transition: box-shadow 0.2s;
-}
-
-.level.current {
-    border: 2px solid #38a169;
-    background: #e6ffe6;
-    box-shadow: 0 0 16px #38a16955;
-}
-
-.level.passed {
-    opacity: 0.6;
-}
-
-.cloud {
-    position: absolute;
-    font-size: 32px;
-    opacity: 0.7;
-    pointer-events: none;
-    z-index: 1;
 }
 
 .icon-bar {
@@ -228,7 +156,7 @@ export default {
 
 .icon-btn {
     background: #fff;
-    border-radius: 12px;
+    border-radius: 32px;
     box-shadow: 0 2px 8px #0001;
     padding: 8px 12px;
     font-size: 18px;
@@ -237,6 +165,11 @@ export default {
     pointer-events: auto;
     border: none;
     position: absolute;
+    cursor: pointer;
+}
+
+.icon-btn:hover {
+    background: #f0f0f0;
 }
 
 .icon-btn.left {
@@ -249,76 +182,28 @@ export default {
     top: 0;
 }
 
-.icon-btn.left2 {
-    left: 10px;
-    top: 60px;
+.icon-btn.right3 {
+    right: 10px;
+    top: 160px;
 }
 
 .icon-btn.right2 {
     right: 10px;
-    top: 60px;
+    top: 80px;
 }
 
-.score-box {
-    position: absolute;
-    left: 10px;
-    bottom: 10px;
-    background: #fff;
-    border-radius: 8px;
-    padding: 8px 16px;
-    font-size: 18px;
-    box-shadow: 0 2px 8px #0001;
+.levels {
+    border: 2px solid #ccc;
 }
 
-.accessories-box {
-    position: absolute;
-    right: 10px;
-    bottom: 10px;
-    display: flex;
-    gap: 8px;
+.level-item:hover {
+    background-color: #e0f7ff;
+    transform: scale(1.05);
 }
 
-.accessory {
-    background: #f9f9f9;
-    border-radius: 6px;
-    padding: 4px;
-}
-
-.menu-item {
-    display: block;
-    padding: 8px 16px;
-    margin: 0 4px;
-    background: #f0f0f0;
-    text-align: center;
-    font-size: 16px;
-    border-radius: 8px;
-    transition: background 0.2s;
-    cursor: pointer;
-}
-
-.menu-item:hover {
-    background: #e0e0e0;
-}
-
-.popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
-.popup-window {
-    background: #fff;
-    padding: 32px 24px;
-    border-radius: 16px;
-    box-shadow: 0 4px 24px #0002;
-    min-width: 240px;
-    text-align: center;
+.level-item {
+    transition: transform 0.3s, background-color 0.3s;
+    min-width: 5rem;
+    min-height: 5rem;
 }
 </style>
